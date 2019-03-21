@@ -20,36 +20,45 @@ namespace Individual_Assigment_1_Michal_Matis
 
         public void SaveToFile()
         {
-            if (!File.Exists("CarList.txt"))
+            try
             {
-                File.Create("CarList.txt");
-            }
-            else
-            {
-                TextWriter writer = new StreamWriter("CarList.txt");
-                foreach (KeyValuePair<int, Car> key in _mapOfCars)
+                if (!File.Exists("CarList.txt"))
                 {
-
-                    Car car = _mapOfCars[key.Key];
-                    writer.WriteLine($"{car.MyID}\t{car.Brand}\t{car.TypeOfCar}\t{car.ProductionYear}\t{car.DrivenKilometers}\t{car.Price}\t" +
-                        $"{car.PlaceOfSell}\t{car.NumberOfDoors}\t{car.IsDamaged}\t{car.Fuel}");
-
+                    File.Create("CarList.txt");
                 }
-                writer.Close();
+                else
+                {
+                    TextWriter writer = new StreamWriter("CarList.txt");
+                    foreach (KeyValuePair<int, Car> key in _mapOfCars)
+                    {
+
+                        Car car = _mapOfCars[key.Key];
+                        writer.WriteLine($"{car.MyID}\t{car.Brand}\t{car.TypeOfCar}\t{car.ProductionYear}\t{car.DrivenKilometers}\t{car.Price}\t" +
+                            $"{car.PlaceOfSell}\t{car.NumberOfDoors}\t{car.IsDamaged}\t{car.Fuel}");
+
+                    }
+                    writer.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Unexpected Error Happend\n" +
+                    $"Error Info:{e.Message}");
             }
         }
 
         public void LoadFromFile()
         {
-            if (!File.Exists("CarList.txt"))
+            try
             {
-                File.Create("CarList.txt");
-
-            }
-            else
-            {
-                try
+                if (!File.Exists("CarList.txt"))
                 {
+                    File.Create("CarList.txt");
+
+                }
+                else
+                {
+
                     string[] splitLine;
                     string[] lines = File.ReadAllLines("CarList.txt");
                     foreach (string line in lines)
@@ -62,23 +71,29 @@ namespace Individual_Assigment_1_Michal_Matis
                         _mapOfCars[car.MyID] = car;
                     }
                 }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Corrupted File");
-                    Console.ReadLine();
-                    Console.Clear();
-                    Console.WriteLine("Reseting File to Default");
-                    Console.ReadLine();
-                    Console.Clear();
-                    File.Delete("CarList.txt");
-                    File.Create("CarList.txt").Close();
-
-                    Car car = carFactory.CreateCarFromFile(0, 0, 0, "Default Brand of the  Car", "Default type of the Car", 0, "Default Place", 0, false, Program.FuelTypes.Diesel);
-                    _mapOfCars.Clear();
-                    _mapOfCars[car.MyID] = car;
-                    SaveToFile();
-                }
             }
+            catch (FormatException)
+            {
+                Console.WriteLine("Corrupted File");
+                Console.ReadLine();
+                Console.Clear();
+                Console.WriteLine("Reseting File to Default");
+                Console.ReadLine();
+                Console.Clear();
+                File.Delete("CarList.txt");
+                File.Create("CarList.txt").Close();
+
+                Car car = carFactory.CreateCarFromFile(0, 0, 0, "Default Brand of the  Car", "Default type of the Car", 0, "Default Place", 0, false, Program.FuelTypes.Diesel);
+                _mapOfCars.Clear();
+                _mapOfCars[car.MyID] = car;
+                SaveToFile();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Unexpected Error Happend\n" +
+                                    $"Error Info:{e.Message}");
+            }
+         
         }
 
         public void AddCarFromKeyboard()
@@ -292,7 +307,7 @@ namespace Individual_Assigment_1_Michal_Matis
         public void FiltersUI()
         {
             
-            //prejst vsetkymi prvkami
+            
             Console.Clear();
             if (_mapOfCars.Count == 0)
             {
@@ -349,10 +364,17 @@ namespace Individual_Assigment_1_Michal_Matis
                 }
                 //vypis
                 Console.Clear();
-                foreach (KeyValuePair<int, Car> key in _mapOfCars)
+                if (currentList.Count == 0)
                 {
-                    _mapOfCars[key.Key].DescribeMe();
-                    Console.WriteLine("______________________________________________");
+                    Console.WriteLine("Sorry no match found");
+                }
+                else
+                {
+                    foreach (KeyValuePair<int, Car> key in currentList)
+                    {
+                        _mapOfCars[key.Key].DescribeMe();
+                        Console.WriteLine("______________________________________________");
+                    }
                 }
             }
             Console.ReadLine();
@@ -394,6 +416,7 @@ namespace Individual_Assigment_1_Michal_Matis
             while (true)
             {
                 string input = Console.ReadLine();
+                input = RemoveUnwantedCharacters(input, " 0123456789AÁÄBCČDĎŽEÉFGHIÍJKLĹĽaáäbcčdďeéfghiíjklĺľMNŇOÓÔPQRŔSŠTŤUÚVWXYÝZŽmnňoóôpqrŕsštťuúvwxyýzž.,-'");
                 if (input.Length == 0)
                 {
                     Console.WriteLine("You can't leave free space Try again");
@@ -457,11 +480,29 @@ namespace Individual_Assigment_1_Michal_Matis
         {
             //checks if the input is good
             decimal result;
+            decimal outResult;
+            
             while (true)
             {
 
                 string input = Console.ReadLine();
+                if (input.Contains(',') && (decimal.TryParse(input, out  outResult)))
+                {               
+                        if (outResult%1==0)
+                        {                           
+                            input=input.Replace(',', '.');
+                        }                       
+                   
+                }
+                else if(input.Contains('.') && (decimal.TryParse(input, out  outResult)))
+                {
+                    if (outResult % 1 == 0)
+                    {
+                        input = input.Replace('.', ',');
+                    }
 
+                }
+                
                 if (decimal.TryParse(input, out result))
                 {
                     if (result < 0)
@@ -505,6 +546,20 @@ namespace Individual_Assigment_1_Michal_Matis
             }
         }
 
+        private static string RemoveUnwantedCharacters(string input, IEnumerable<char> allowedCharacters)
+        {
+            var filtered = input.ToCharArray()
+                .Where(c => allowedCharacters.Contains(c))
+                .ToArray();
+
+            if (filtered.Length == 0)
+            {
+                return "";
+            }
+
+            return new String(filtered);
+        }
+
         private int CheckID()
         {
             //checks if the input is good
@@ -544,7 +599,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
         }
         #endregion
-        #region filtrs
+        #region filters
         private Dictionary<int, Car> FilterFuels(Dictionary<int, Car> listOfCars)
         {
 
@@ -635,14 +690,16 @@ namespace Individual_Assigment_1_Michal_Matis
             foreach (var car in listOfCars)
             {
                 Car thiscar = listOfCars[car.Key];
-                bool helpme = false;
+                bool keepThatFucker = false;
                 foreach (var brand in brands)
+                {
 
                     if (thiscar.Brand.Equals(brand))
                     {
-                        helpme = true;
+                        keepThatFucker = true;
                     }
-                if (!helpme)
+                }
+                if (!keepThatFucker)
                 {
                     deleteList.Add(thiscar.MyID);
                 }
