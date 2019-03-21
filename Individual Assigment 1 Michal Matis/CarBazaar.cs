@@ -459,7 +459,8 @@ namespace Individual_Assigment_1_Michal_Matis
             Program.FuelTypes result;
             while (true)
             {
-                if (Enum.TryParse<Program.FuelTypes>(Console.ReadLine(), out result))
+                string input = Console.ReadLine();
+                if (Enum.TryParse<Program.FuelTypes>(input, out result)&&(!int.TryParse(input,out int helpme)))
                 {
                     return result;
                 }
