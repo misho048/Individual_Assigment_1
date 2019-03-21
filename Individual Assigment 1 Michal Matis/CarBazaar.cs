@@ -18,7 +18,6 @@ namespace Individual_Assigment_1_Michal_Matis
             LoadFromFile();
         }
 
-
         public void SaveToFile()
         {
             if (!File.Exists("CarList.txt"))
