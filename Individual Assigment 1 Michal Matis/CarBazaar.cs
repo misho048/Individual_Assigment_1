@@ -11,6 +11,7 @@ namespace Individual_Assigment_1_Michal_Matis
     {
         public Dictionary<int, Car> _mapOfCars = new Dictionary<int, Car>();
         public CarFactory carFactory;
+
         public CarBazaar()
         {
             carFactory = new CarFactory();
