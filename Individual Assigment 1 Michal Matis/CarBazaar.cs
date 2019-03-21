@@ -101,26 +101,35 @@ namespace Individual_Assigment_1_Michal_Matis
             Console.Clear();
             Console.WriteLine("Enter year of the production");
             int year = CheckYear();
+
             Console.WriteLine("Enter number of kilometers");
             int numberOfKilometers = CheckInt();
+
             Console.WriteLine("Enter brand of the car");
             string brand = CheckString();
+
             Console.WriteLine("Enter type of the car");
             string type = CheckString();
+
             Console.WriteLine("Enter place where you are selling the car");
             string placeOfSell = CheckString();
+
             Console.WriteLine("Enter price");
             decimal price = CheckDecimal();
+
             Console.WriteLine("Enter number of doors");
             int numOfDoors = CheckInt();
+
             Console.WriteLine("Is car damaged? y/n");
             bool isDamaged = CheckBoolean();
+
             Console.Write("Choose fuel type:");
             foreach (var something in (Program.FuelTypes[])Enum.GetValues(typeof(Program.FuelTypes)))
             {
                 Console.Write($" {something},");
             }
             Console.WriteLine();
+
             Program.FuelTypes typeOfFuel = CheckFuel();
             Car car = carFactory.CreateCar(year, numberOfKilometers, brand, type, price, placeOfSell, numOfDoors, isDamaged, typeOfFuel);
             _mapOfCars[car.MyID] = car;
@@ -272,10 +281,17 @@ namespace Individual_Assigment_1_Michal_Matis
         public void WriteAllCars()
         {
             Console.Clear();
-            foreach (KeyValuePair<int, Car> key in _mapOfCars)
+            if (_mapOfCars.Count == 0)
             {
-                _mapOfCars[key.Key].DescribeMe();
-                Console.WriteLine("______________________________________________");
+                Console.WriteLine("List is empty");
+            }
+            else
+            {
+                foreach (KeyValuePair<int, Car> key in _mapOfCars)
+                {
+                    _mapOfCars[key.Key].DescribeMe();
+                    Console.WriteLine("______________________________________________");
+                }
             }
 
 
@@ -385,13 +401,13 @@ namespace Individual_Assigment_1_Michal_Matis
         public static int CheckInt()
         {
             //checks if the input is good
-            int result;
+            
             while (true)
             {
 
                 string input = Console.ReadLine();
 
-                if (int.TryParse(input, out result))
+                if (int.TryParse(input, out int result))
                 {
                     if (result < 0)
                     {
@@ -416,6 +432,7 @@ namespace Individual_Assigment_1_Michal_Matis
             while (true)
             {
                 string input = Console.ReadLine();
+                //not all characters are valid 
                 input = RemoveUnwantedCharacters(input, " 0123456789AÁÄBCČDĎŽEÉFGHIÍJKLĹĽaáäbcčdďeéfghiíjklĺľMNŇOÓÔPQRŔSŠTŤUÚVWXYÝZŽmnňoóôpqrŕsštťuúvwxyýzž.,-'");
                 if (input.Length == 0)
                 {
@@ -456,11 +473,12 @@ namespace Individual_Assigment_1_Michal_Matis
         private Program.FuelTypes CheckFuel()
         {
             //checks if the input is good
-            Program.FuelTypes result;
+            
             while (true)
             {
                 string input = Console.ReadLine();
-                if (Enum.TryParse<Program.FuelTypes>(input, out result)&&(!int.TryParse(input,out int helpme)))
+                //to avoid int as valid input
+                if (Enum.TryParse<Program.FuelTypes>(input, out Program.FuelTypes result) &&(!int.TryParse(input,out int helpme)))
                 {
                     return result;
                 }
@@ -480,14 +498,15 @@ namespace Individual_Assigment_1_Michal_Matis
         private decimal CheckDecimal()
         {
             //checks if the input is good
-            decimal result;
+            
+            //to helps me sort "," and "."
             decimal outResult;
             
             while (true)
             {
 
                 string input = Console.ReadLine();
-                if (input.Contains(',') && (decimal.TryParse(input, out  outResult)))
+                if (input.Contains(',') && (decimal.TryParse(input, out outResult )))
                 {               
                         if (outResult%1==0)
                         {                           
@@ -504,7 +523,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
                 }
                 
-                if (decimal.TryParse(input, out result))
+                if (decimal.TryParse(input, out decimal result))
                 {
                     if (result < 0)
                     {
@@ -549,6 +568,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
         private static string RemoveUnwantedCharacters(string input, IEnumerable<char> allowedCharacters)
         {
+            //filter charaters i dont want to see 
             var filtered = input.ToCharArray()
                 .Where(c => allowedCharacters.Contains(c))
                 .ToArray();
@@ -601,18 +621,25 @@ namespace Individual_Assigment_1_Michal_Matis
         }
         #endregion
         #region filters
+        
         private Dictionary<int, Car> FilterFuels(Dictionary<int, Car> listOfCars)
         {
 
             List<Program.FuelTypes> fuels = new List<Program.FuelTypes>();
 
-            Console.WriteLine("Enter Type of fuel: (Gasoline,Diesel,Gas,Electricity)");
+            Console.WriteLine("Enter Type of fuel: ");            
+            foreach (var something in (Program.FuelTypes[])Enum.GetValues(typeof(Program.FuelTypes)))
+            {
+                Console.Write($" {something},");
+            }
+            Console.WriteLine();
             do
             {
                 fuels.Add(CheckFuel());
                 Console.WriteLine("Do you want to add another type of fuel ? y/n");
             } while (CheckBoolean());
 
+            //stores ID to delete
             List<int> deleteList = new List<int>();
 
             foreach (var car in listOfCars)
@@ -648,7 +675,7 @@ namespace Individual_Assigment_1_Michal_Matis
                 places.Add(CheckString());
                 Console.WriteLine("Do you want to add another Place?y/n");
             } while (CheckBoolean());
-
+            //stores ID to delete
             List<int> deleteList = new List<int>();
 
             foreach (var car in listOfCars)
@@ -676,7 +703,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
         private Dictionary<int, Car> FilterBrand(Dictionary<int, Car> listOfCars)
         {
-
+            
             List<string> brands = new List<string>();
 
             Console.WriteLine("Enter Brand:");
@@ -685,7 +712,7 @@ namespace Individual_Assigment_1_Michal_Matis
                 brands.Add(CheckString());
                 Console.WriteLine("Do you want to add another brand?y/n");
             } while (CheckBoolean());
-
+            //stores ID to delete
             List<int> deleteList = new List<int>();
 
             foreach (var car in listOfCars)
@@ -726,7 +753,7 @@ namespace Individual_Assigment_1_Michal_Matis
                 numOfDoors = CheckInt();
             } while ((numOfDoors != 3) && (numOfDoors != 5));
 
-
+            //stores ID to delete
             List<int> deleteList = new List<int>();
 
             foreach (var car in listOfCars)
@@ -753,6 +780,7 @@ namespace Individual_Assigment_1_Michal_Matis
             int from = CheckInt();
             Console.WriteLine("Year of production To?");
             int to = CheckInt();
+            //stores ID to delete
             List<int> deleteList = new List<int>();
 
             foreach (var car in listOfCars)
@@ -779,6 +807,7 @@ namespace Individual_Assigment_1_Michal_Matis
             int from = CheckInt();
             Console.WriteLine("Enter Number of Kilometers To?");
             int to = CheckInt();
+            //stores ID to delete
             List<int> deleteList = new List<int>();
 
             foreach (var car in listOfCars)
@@ -805,6 +834,7 @@ namespace Individual_Assigment_1_Michal_Matis
             decimal from = CheckDecimal();
             Console.WriteLine("Enter Price To?");
             decimal to = CheckDecimal();
+            //stores ID to delete
             List<int> deleteList = new List<int>();
 
             foreach (var car in listOfCars)
@@ -829,6 +859,7 @@ namespace Individual_Assigment_1_Michal_Matis
             bool damaged;
             Console.WriteLine("Do You want to include damaged cars? y/n");
             damaged = CheckBoolean();
+            //stores ID to delete
             List<int> deleteList = new List<int>();
 
             foreach (var car in listOfCars)
