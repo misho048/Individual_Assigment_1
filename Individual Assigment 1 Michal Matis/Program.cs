@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Individual_Assigment_1_Michal_Matis
 {
@@ -10,8 +7,8 @@ namespace Individual_Assigment_1_Michal_Matis
     {
         static void Main(string[] args)
         {
-
-            CarBazaar autoSalon = new CarBazaar();            
+       
+            CarBazaar autoSalon = new CarBazaar();
             MainMenu(autoSalon);
         }
 
@@ -28,10 +25,10 @@ namespace Individual_Assigment_1_Michal_Matis
                     "2: Add new Car\n" +
                     "3: Edit car \n" +
                     "4: Delete car \n" +
-                    "5: Save Changes \n" +
+                    /*"5: Save Changes \n" +
                     "6: Filters \n" +
                     "7: Load Cars from File\n" +
-                    "8: Save and Exit\n" +
+                    "8: Save and Exit\n" +*/
                     "9: Exit without Saving");
 
                 int choice = CarBazaar.CheckInt();
@@ -58,17 +55,14 @@ namespace Individual_Assigment_1_Michal_Matis
                             autoSalon.DeleteCarByID();
                             break;
                         }
-                    case 5:
-                        {
-                            autoSalon.SaveToFile();
-                            break;
-                        }
+                   
+                       
                     case 6:
                         {
-                            autoSalon.FiltersUI();
+                            //autoSalon.FiltersUI();
                             break;
                         }
-                    case 7:
+                  /*  case 7:
                         {
                             autoSalon.LoadFromFile();
                             break;
@@ -78,7 +72,7 @@ namespace Individual_Assigment_1_Michal_Matis
                             autoSalon.SaveToFile();
                             repeat = false;
                             break;
-                        }
+                        }*/
 
                     case 9:
                         {

@@ -1,8 +1,6 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Individual_Assigment_1_Michal_Matis
 {
@@ -10,32 +8,63 @@ namespace Individual_Assigment_1_Michal_Matis
     {
         //This class is creating new cars and holding unique ID 
         private int ID;
+        private CarRepository repository = new CarRepository();
         
         public CarFactory( )
         {          
             
-        }
-
-        private void FixID(int input)
+        }       
+                      
+        public void CreateCar(int productionYear, int drivenKilometers, string brand, string typeOfCar, decimal price, string placeOfSell, int numberOfDoors, bool isDamaged, Program.FuelTypes fuel)
         {
-            if (input > ID)
-            {
-                ID = input;
-            }
-
             
+            CarModel car = new CarModel();
+            car.MyID= repository.GetMaxID() + 1;
+            car.ProductionYear = productionYear;
+            car.DrivenKilometers = drivenKilometers;
+            car.Brand = brand;
+            car.TypeOfCar = typeOfCar;
+            car.Price = price;
+            car.PlaceOfSell = placeOfSell;
+            car.NumberOfDoors = numberOfDoors;
+            car.IsDamaged = isDamaged;
+            car.Fuel = fuel;
+            repository.AddNewCar(car);           
         }
 
-        public Car CreateCarFromFile(int idFromFile, int productionYear, int drivenKilometers, string brand, string typeOfCar, decimal price, string placeOfSell, int numberOfDoors, bool isDamaged, Program.FuelTypes fuel)
+        public void CreateCar(int ID,int productionYear, int drivenKilometers, string brand, string typeOfCar, decimal price, string placeOfSell, int numberOfDoors, bool isDamaged, Program.FuelTypes fuel)
         {
-            FixID(idFromFile);
-            return new Car(idFromFile, productionYear, drivenKilometers, brand, typeOfCar, price, placeOfSell, numberOfDoors, isDamaged, fuel);
+
+            CarModel car = new CarModel();
+            car.MyID = ID;
+            car.ProductionYear = productionYear;
+            car.DrivenKilometers = drivenKilometers;
+            car.Brand = brand;
+            car.TypeOfCar = typeOfCar;
+            car.Price = price;
+            car.PlaceOfSell = placeOfSell;
+            car.NumberOfDoors = numberOfDoors;
+            car.IsDamaged = isDamaged;
+            car.Fuel = fuel;
+            repository.AddNewCar(car);
         }
-               
-        public Car CreateCar(int productionYear, int drivenKilometers, string brand, string typeOfCar, decimal price, string placeOfSell, int numberOfDoors, bool isDamaged, Program.FuelTypes fuel)
+
+        public Dictionary<int, CarModel> GetAllCars()
         {
-            ID++;
-            return new Car(ID,productionYear,drivenKilometers,brand,typeOfCar,price,placeOfSell,numberOfDoors, isDamaged,fuel);
+            return repository.GetAll();
         }
+
+        public CarModel GetCarByID(int id)
+        {
+            return repository.GetCarByID(id);
+        }
+
+        public void RemoveCar (int id)
+        {
+            repository.DeleteCar(id);
+        }
+
+        
+
     }
 }

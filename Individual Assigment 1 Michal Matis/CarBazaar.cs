@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Individual_Assigment_1_Michal_Matis
 {
     class CarBazaar
     {
-        public Dictionary<int, Car> _mapOfCars = new Dictionary<int, Car>();
+        
         public CarFactory carFactory;
+        public Dictionary<int, CarModel> _mapOfCars;
 
         public CarBazaar()
         {
             carFactory = new CarFactory();
-            LoadFromFile();
+            _mapOfCars = new Dictionary<int, CarModel>(carFactory.GetAllCars());
+            
         }
-
+        /*
         public void SaveToFile()
         {
             try
@@ -95,7 +96,7 @@ namespace Individual_Assigment_1_Michal_Matis
             }
          
         }
-
+        */
         public void AddCarFromKeyboard()
         {
             Console.Clear();
@@ -131,9 +132,10 @@ namespace Individual_Assigment_1_Michal_Matis
             Console.WriteLine();
 
             Program.FuelTypes typeOfFuel = CheckFuel();
-            Car car = carFactory.CreateCar(year, numberOfKilometers, brand, type, price, placeOfSell, numOfDoors, isDamaged, typeOfFuel);
-            _mapOfCars[car.MyID] = car;
-            SaveToFile();
+            carFactory.CreateCar(year, numberOfKilometers, brand, type, price, placeOfSell, numOfDoors, isDamaged, typeOfFuel);
+            //Car car = carFactory.CreateCar(year, numberOfKilometers, brand, type, price, placeOfSell, numOfDoors, isDamaged, typeOfFuel);
+           // _mapOfCars[car.MyID] = car;
+            //SaveToFile();
         }
 
         public void EditCarByID()
@@ -148,8 +150,9 @@ namespace Individual_Assigment_1_Michal_Matis
             {
 
 
-                WriteAllCars();
+                WriteAllCars();                
                 int id = CheckID();
+                CarModel car = carFactory.GetCarByID(id);
                 try
                 {
                     //
@@ -176,21 +179,21 @@ namespace Individual_Assigment_1_Michal_Matis
                                 {
                                     Console.WriteLine($"Old Year :{ _mapOfCars[id].ProductionYear}\n" +
                                         $"Enter new Year");
-                                    _mapOfCars[id].ProductionYear = CheckYear();
+                                    car.ProductionYear = CheckYear();
                                     break;
                                 }
                             case 2:
                                 {
                                     Console.WriteLine($"Old number of kilometers :{ _mapOfCars[id].DrivenKilometers}\n" +
                                         $"Enter new number of kilometers");
-                                    _mapOfCars[id].DrivenKilometers = CheckInt();
+                                    car.DrivenKilometers = CheckInt();
                                     break;
                                 }
                             case 3:
                                 {
                                     Console.WriteLine($"Old Brand of the car :{ _mapOfCars[id].Brand}\n" +
                                         $"Enter new Brand of the car");
-                                    _mapOfCars[id].Brand = CheckString();
+                                    car.Brand = CheckString();
                                     break;
                                 }
 
@@ -198,7 +201,7 @@ namespace Individual_Assigment_1_Michal_Matis
                                 {
                                     Console.WriteLine($"Old Type of the car :{ _mapOfCars[id].TypeOfCar}\n" +
                                         $"Enter new Type of the car");
-                                    _mapOfCars[id].TypeOfCar = CheckString();
+                                    car.TypeOfCar = CheckString();
                                     break;
                                 }
 
@@ -206,7 +209,7 @@ namespace Individual_Assigment_1_Michal_Matis
                                 {
                                     Console.WriteLine($"Old Place of sell :{ _mapOfCars[id].PlaceOfSell}\n" +
                                         $"Enter new Place of sell");
-                                    _mapOfCars[id].PlaceOfSell = CheckString();
+                                   car.PlaceOfSell = CheckString();
                                     break;
                                 }
 
@@ -214,7 +217,7 @@ namespace Individual_Assigment_1_Michal_Matis
                                 {
                                     Console.WriteLine($"Old Price :{ _mapOfCars[id].Price}\n" +
                                         $"Enter new Price");
-                                    _mapOfCars[id].Price = CheckDecimal();
+                                    car.Price = CheckDecimal();
                                     break;
 
                                 }
@@ -223,7 +226,7 @@ namespace Individual_Assigment_1_Michal_Matis
                                 {
                                     Console.WriteLine($"Old Number of Doors :{ _mapOfCars[id].NumberOfDoors}\n" +
                                         $"Enter new Number of Doors");
-                                    _mapOfCars[id].NumberOfDoors = CheckInt();
+                                    car.NumberOfDoors = CheckInt();
                                     break;
                                 }
 
@@ -231,7 +234,7 @@ namespace Individual_Assigment_1_Michal_Matis
                                 {
                                     Console.WriteLine($"Old Condition (Is car damaged?) :{ _mapOfCars[id].IsDamaged}\n" +
                                         $"What is new condition, Is car damaged? y/n");
-                                    _mapOfCars[id].IsDamaged = CheckBoolean();
+                                   car.IsDamaged = CheckBoolean();
                                     break;
 
                                 }
@@ -243,7 +246,7 @@ namespace Individual_Assigment_1_Michal_Matis
                                         Console.Write($" {something},");
                                     }
                                     Console.WriteLine();
-                                    _mapOfCars[id].Fuel = CheckFuel();
+                                   car.Fuel = CheckFuel();
                                     break;
                                 }
                             case 0:
@@ -268,6 +271,10 @@ namespace Individual_Assigment_1_Michal_Matis
                         }
 
                     }
+                    carFactory.RemoveCar(id);
+                    carFactory.CreateCar(id, car.ProductionYear, car.DrivenKilometers, car.Brand, car.TypeOfCar, car.Price,
+                        car.PlaceOfSell, car.NumberOfDoors, car.IsDamaged, car.Fuel);
+                    _mapOfCars = new Dictionary<int, CarModel>(carFactory.GetAllCars());
                 }
                 catch (KeyNotFoundException)
                 {
@@ -280,6 +287,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
         public void WriteAllCars()
         {
+            _mapOfCars = new Dictionary<int, CarModel> (carFactory.GetAllCars());
             Console.Clear();
             if (_mapOfCars.Count == 0)
             {
@@ -287,7 +295,7 @@ namespace Individual_Assigment_1_Michal_Matis
             }
             else
             {
-                foreach (KeyValuePair<int, Car> key in _mapOfCars)
+                foreach (KeyValuePair<int, CarModel> key in _mapOfCars)
                 {
                     _mapOfCars[key.Key].DescribeMe();
                     Console.WriteLine("______________________________________________");
@@ -314,12 +322,14 @@ namespace Individual_Assigment_1_Michal_Matis
                 Console.WriteLine("Do you really want to remove this car? y/n");
                 if (CheckBoolean())
                 {
+
                     _mapOfCars.Remove(id);
+                    carFactory.RemoveCar(id);
                 }
 
             }
         }
-
+       
         public void FiltersUI()
         {
             
@@ -332,7 +342,7 @@ namespace Individual_Assigment_1_Michal_Matis
             }
             else
             {
-                Dictionary<int, Car> currentList = new Dictionary<int, Car>(_mapOfCars);
+                Dictionary<int, CarModel> currentList = new Dictionary<int, CarModel>(_mapOfCars);
                 Console.WriteLine("Enter number of Fillters \n" +
                     "for example for using filters 1 5 and 7 enter 157\n" +
                     "1: Year of production \n" +
@@ -386,7 +396,7 @@ namespace Individual_Assigment_1_Michal_Matis
                 }
                 else
                 {
-                    foreach (KeyValuePair<int, Car> key in currentList)
+                    foreach (KeyValuePair<int, CarModel> key in currentList)
                     {
                         _mapOfCars[key.Key].DescribeMe();
                         Console.WriteLine("______________________________________________");
@@ -397,7 +407,8 @@ namespace Individual_Assigment_1_Michal_Matis
             
 
         }
-        #region input control
+        
+       #region input control
         public static int CheckInt()
         {
             //checks if the input is good
@@ -433,7 +444,7 @@ namespace Individual_Assigment_1_Michal_Matis
             {
                 string input = Console.ReadLine();
                 //not all characters are valid 
-                input = RemoveUnwantedCharacters(input, " 0123456789AÁÄBCČDĎŽEÉFGHIÍJKLĹĽaáäbcčdďeéfghiíjklĺľMNŇOÓÔPQRŔSŠTŤUÚVWXYÝZŽmnňoóôpqrŕsštťuúvwxyýzž.,-'");
+                input = RemoveUnwantedCharacters(input, " \t0123456789AÁÄBCČDĎŽEÉFGHIÍJKLĹĽaáäbcčdďeéfghiíjklĺľMNŇOÓÔPQRŔSŠTŤUÚVWXYÝZŽmnňoóôpqrŕsštťuúvwxyýzž.,-'");
                 if (input.Length == 0)
                 {
                     Console.WriteLine("You can't leave free space Try again");
@@ -622,7 +633,7 @@ namespace Individual_Assigment_1_Michal_Matis
         #endregion
         #region filters
         
-        private Dictionary<int, Car> FilterFuels(Dictionary<int, Car> listOfCars)
+        private Dictionary<int, CarModel> FilterFuels(Dictionary<int, CarModel> listOfCars)
         {
 
             List<Program.FuelTypes> fuels = new List<Program.FuelTypes>();
@@ -644,7 +655,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
             foreach (var car in listOfCars)
             {
-                Car thiscar = listOfCars[car.Key];
+                CarModel thiscar = listOfCars[car.Key];
                 bool helpme = false;
                 foreach (var fuel in fuels)
 
@@ -665,7 +676,7 @@ namespace Individual_Assigment_1_Michal_Matis
             return listOfCars;
         }
 
-        private Dictionary<int, Car> FilterPlaces(Dictionary<int, Car> listOfCars)
+        private Dictionary<int, CarModel> FilterPlaces(Dictionary<int, CarModel> listOfCars)
         {
 
             List<string> places = new List<string>();
@@ -680,7 +691,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
             foreach (var car in listOfCars)
             {
-                Car thiscar = listOfCars[car.Key];
+                CarModel thiscar = listOfCars[car.Key];
                 bool helpme = false;
                 foreach (var place in places)
 
@@ -701,7 +712,7 @@ namespace Individual_Assigment_1_Michal_Matis
             return listOfCars;
         }
 
-        private Dictionary<int, Car> FilterBrand(Dictionary<int, Car> listOfCars)
+        private Dictionary<int, CarModel> FilterBrand(Dictionary<int, CarModel> listOfCars)
         {
             
             List<string> brands = new List<string>();
@@ -717,7 +728,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
             foreach (var car in listOfCars)
             {
-                Car thiscar = listOfCars[car.Key];
+                CarModel thiscar = listOfCars[car.Key];
                 bool keepThatFucker = false;
                 foreach (var brand in brands)
                 {
@@ -744,7 +755,7 @@ namespace Individual_Assigment_1_Michal_Matis
             return listOfCars;
         }
 
-        private Dictionary<int, Car> FilterNumOfDoors(Dictionary<int, Car> listOfCars)
+        private Dictionary<int, CarModel> FilterNumOfDoors(Dictionary<int, CarModel> listOfCars)
         {
             int numOfDoors;
             do
@@ -758,7 +769,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
             foreach (var car in listOfCars)
             {
-                Car thiscar = listOfCars[car.Key];
+                CarModel thiscar = listOfCars[car.Key];
                 if (thiscar.NumberOfDoors != numOfDoors)
                 {
 
@@ -773,7 +784,7 @@ namespace Individual_Assigment_1_Michal_Matis
             return listOfCars;
         }
 
-        private Dictionary<int, Car> FilterYear(Dictionary<int, Car> listOfCars)
+        private Dictionary<int, CarModel> FilterYear(Dictionary<int, CarModel> listOfCars)
         {
 
             Console.WriteLine("Year of production From?");
@@ -785,7 +796,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
             foreach (var car in listOfCars)
             {
-                Car thiscar = listOfCars[car.Key];
+                CarModel thiscar = listOfCars[car.Key];
                 if (thiscar.ProductionYear < from || thiscar.ProductionYear > to)
                 {
 
@@ -800,7 +811,7 @@ namespace Individual_Assigment_1_Michal_Matis
             return listOfCars;
         }
 
-        private Dictionary<int, Car> FilterKilometers(Dictionary<int, Car> listOfCars)
+        private Dictionary<int, CarModel> FilterKilometers(Dictionary<int, CarModel> listOfCars)
         {
 
             Console.WriteLine("Enter Number of Kilometers From?");
@@ -812,7 +823,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
             foreach (var car in listOfCars)
             {
-                Car thiscar = listOfCars[car.Key];
+                CarModel thiscar = listOfCars[car.Key];
                 if (thiscar.DrivenKilometers < from || thiscar.DrivenKilometers > to)
                 {
 
@@ -827,7 +838,7 @@ namespace Individual_Assigment_1_Michal_Matis
             return listOfCars;
         }
 
-        private Dictionary<int, Car> FilterPrice(Dictionary<int, Car> listOfCars)
+        private Dictionary<int, CarModel> FilterPrice(Dictionary<int, CarModel> listOfCars)
         {
 
             Console.WriteLine("Enter Price From?");
@@ -839,7 +850,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
             foreach (var car in listOfCars)
             {
-                Car thiscar = listOfCars[car.Key];
+                CarModel thiscar = listOfCars[car.Key];
                 if (thiscar.Price < from || thiscar.Price > to)
                 {
 
@@ -854,7 +865,7 @@ namespace Individual_Assigment_1_Michal_Matis
             return listOfCars;
         }
 
-        private Dictionary<int, Car> FilterDamaged(Dictionary<int, Car> listOfCars)
+        private Dictionary<int, CarModel> FilterDamaged(Dictionary<int, CarModel> listOfCars)
         {
             bool damaged;
             Console.WriteLine("Do You want to include damaged cars? y/n");
@@ -864,7 +875,7 @@ namespace Individual_Assigment_1_Michal_Matis
 
             foreach (var car in listOfCars)
             {
-                Car thiscar = listOfCars[car.Key];
+                CarModel thiscar = listOfCars[car.Key];
                 if (thiscar.IsDamaged != damaged)
                 {
 
